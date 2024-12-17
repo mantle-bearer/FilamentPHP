@@ -1,0 +1,1 @@
+<img src="{{ asset('images/logo-png.png') }}" alt="Prudy Telecom" class="h-26" />
