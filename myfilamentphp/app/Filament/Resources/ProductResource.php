@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\ProductTypeEnum;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Models\Product;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -32,6 +34,55 @@ class ProductResource extends Resource
         return $form
             ->schema([
                 //
+                Forms\Components\Group::make()
+                    ->schema([
+                        Forms\Components\Section::make('Product Details')
+                            ->schema([
+                                Forms\Components\TextInput::make('name')->autocapitalize('words'),
+                                Forms\Components\TextInput::make('slug'),
+                                Forms\Components\MarkdownEditor::make('description')
+                                 ->columnSpan('full')
+                                 ->disableToolbarButtons([
+                                    'codeBlock'
+                                 ])
+
+                            ])->columns(2),
+
+
+                        Forms\Components\Section::make('Pricing & Inventory')
+                        ->schema([
+                            Forms\Components\TextInput::make('sku'),
+                            Forms\Components\TextInput::make('price'),
+                            Forms\Components\TextInput::make('quantity'),
+                            Forms\Components\Select::make('type')
+                                ->options([
+                                    'downloadable' => ProductTypeEnum::DOWNLOADABLE->value,
+                                    'deliverable' => ProductTypeEnum::DELIVERABLE->value
+                                ])
+
+                        ])->columns(2)
+                ]),
+
+                Forms\Components\Group::make()
+                ->schema([
+                    Forms\Components\Section::make('Status')
+                        ->schema([
+                            Forms\Components\Toggle::make('is_visible'),
+                            Forms\Components\Toggle::make('is_featured'),
+                            Forms\Components\DatePicker::make('published_at')
+                        ]),
+                    Forms\Components\Section::make('Image')
+                    ->schema([
+                        Forms\Components\FileUpload::make('image')
+                    ])->collapsible(),
+
+                    Forms\Components\Section::make('Associations')
+                    ->schema([
+                        Forms\Components\Select::make('brand_id')
+                            ->relationship('brand', 'name')
+                    ])
+                ])
+
             ]);
     }
 
